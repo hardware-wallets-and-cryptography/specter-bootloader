@@ -1,6 +1,8 @@
 [submodule "lib/secp256k1"]
 	path = lib/secp256k1
-	url = https://github.com/bitcoin-core/secp256k1.git
+	url = https://github.com/hardware-wallets-and-cryptography/bitcoin-core--secp256k1
+	branch = specter-bootloader--pin
+
 [submodule "lib/fatfs"]
 	path = lib/fatfs
 	url = https://github.com/hardware-wallets-and-cryptography/fatfs.git
