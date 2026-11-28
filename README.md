@@ -6,7 +6,7 @@ This is a secure bootloader for [Specter hardware wallet](https://github.com/cry
 
 Follow [selfsigned.md](./doc/selfsigned.md) to compile the bootloader, generate initial firmware and upgrade files.
 
-Read [remove_protection](./doc/remove_protection.md) to understand how to disable read and write protections on the board with the bootloader.
+Read [remove-protection.md](./doc/remove-protection.md) to understand how to disable read and write protections on the board with the bootloader.
 
 Read [the specs](./doc/bootloader-spec.md) to get all the nasty details.
 
