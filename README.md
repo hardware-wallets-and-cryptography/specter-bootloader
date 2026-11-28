@@ -112,7 +112,7 @@ The **stm32f469disco** platform supports three levels of read protection:
 
 - RDP Level 0 - no protection at all
 - RDP Level 1 - no external access to flash memory, JTAG/SWD can be used to erase the chip
-- RDP Level 2  - JTAG/SWD is disabled completely, protection settings cannot be changed
+- RDP Level 2 - JTAG/SWD is disabled completely, protection settings cannot be changed
 
 For additional information please see the STM32F469xx Reference Manual.
 

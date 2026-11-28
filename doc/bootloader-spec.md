@@ -20,25 +20,25 @@
 
 ## Feature Summary
 
-*   Source of firmware: SD/MicroSD card
-*   File systems: FAT32
-*   Access method: read-only
-*   Integrity check: CRC32
-*   Digital signature: ECDSA, secp256k1, SHA-256
-*   Versioning: semantic versioning in a 32-bit number
-*   Bootloader upgrade: two copies of bootloader and non-upgradable start-up code
-*   Downgrade: prohibited for the Bootloader and the Main Firmware
-*   Firmware file contains the following sections:
-    *   One or several payload sections, including "main" and "boot"
-    *   Signature section "sign"
-*   Each section of the firmware file has its own header and is protected by a separate CRC code
-*   The digital signature is calculated over all payload sections
-*   Key hierarchy:
-    *   Vendor keys capable to sign Bootloader and/or Main Firmware
-    *   Maintainer keys capable to sign MainFirmware only
-*   Key management: Bootloader stores a set of Vendor public keys and a set of Maintainer public keys
-*   New keys are added and compromised keys are revoked by issuing a new Bootloader
-*   Multisignature support with configurable thresholds
+- Source of firmware: SD/MicroSD card
+- File systems: FAT32
+- Access method: read-only
+- Integrity check: CRC32
+- Digital signature: ECDSA, secp256k1, SHA-256
+- Versioning: semantic versioning in a 32-bit number
+- Bootloader upgrade: two copies of bootloader and non-upgradable start-up code
+- Downgrade: prohibited for the Bootloader and the Main Firmware
+- Firmware file contains the following sections:
+  - One or several payload sections, including "main" and "boot"
+  - Signature section "sign"
+- Each section of the firmware file has its own header and is protected by a separate CRC code
+- The digital signature is calculated over all payload sections
+- Key hierarchy:
+  - Vendor keys capable to sign Bootloader and/or Main Firmware
+  - Maintainer keys capable to sign MainFirmware only
+- Key management: Bootloader stores a set of Vendor public keys and a set of Maintainer public keys
+- New keys are added and compromised keys are revoked by issuing a new Bootloader
+- Multisignature support with configurable thresholds
 
 ### Multisignature support
 
@@ -54,9 +54,9 @@ These steps are performed by the Start-up code, non-upgradable part of Bootloade
 
 1. Read Bootloader’s integrity check records stored at the end of 2 pre-determined sectors, containing copies of Bootloader.
 2. Select a copy of the Bootloader that meets the following criteria:
-    1. Its integrity check record exists and is correct (checking record’s own CRC).
-    2. Its contents (executable code and data) also passes the integrity check.
-    3. Its version is the latest in case two correct Bootloader copies exist. If both copies are correct and have identical versions the first copy is selected.
+   1. Its integrity check record exists and is correct (checking record’s own CRC).
+   2. Its contents (executable code and data) also passes the integrity check.
+   3. Its version is the latest in case two correct Bootloader copies exist. If both copies are correct and have identical versions the first copy is selected.
 3. If no Bootloader copy is selected, the Start-up code enters an endless loop with a specific LED indication.
 4. Remap interrupt vectors and branch to the entry point of selected Bootloader (its reset vector).
 
@@ -66,23 +66,17 @@ In case any of the steps 1-5 fails, the Bootloader unmounts the SD card and proc
 
 1. Ensure that the SD card is inserted.
 2. Mount the file system.
-3. Find a firmware file having a predetermined name format and extension, like "specter_upgrade_v1.05.01.bin" using a pattern "specter_upgrade*.bin" in the root directory of SD card. Presence of more than one matching files aborts upgrade process.
+3. Find a firmware file having a predetermined name format and extension, like "specter_upgrade_v1.05.01.bin" using a pattern "specter_upgrade\*.bin" in the root directory of SD card. Presence of more than one matching files aborts upgrade process.
 4. Read fixed-size headers of all sections from the firmware file into RAM, check their CRC. The presence of any unknown section aborts the firmware upgrade process.
 5. Obtain and verify version information from the headers, including:
-    1. Version of Firmware, check if it is later than currently programmed
-    2. Version of Bootloader if "boot" section exists, check if it is later than programmed
+   1. Version of Firmware, check if it is later than currently programmed
+   2. Version of Bootloader if "boot" section exists, check if it is later than programmed
 6. Verify the correctness of all parameters from headers and that the firmware is compatible with the platform on which the Bootloader is running.
-7. Verify that the last section is the "sign" section. Parse its contents extracting fingerprint-signature pairs, creating a table in RAM. Ensure that:
-    3. A public key with a provided fingerprint exists in the pre-defined table stored within the Bootloader. Otherwise, remove the signature from the RAM table.
-    4. The key referenced by the fingerprint is capable to sign the given payload. Otherwise, remove the signature from the RAM table. The use of Maintainer keys is not allowed to sign a firmware file containing the "boot" section.
-    5. The key referenced by fingerprint was not encountered in the RAM table before. Otherwise, remove the duplicating signature from the RAM table.
-    6. The number of remaining signatures is not less than a predefined minimum signature threshold (a separate threshold for the Firmware and for the Bootloader).
+7. Verify that the last section is the "sign" section. Parse its contents extracting fingerprint-signature pairs, creating a table in RAM. Ensure that: 3. A public key with a provided fingerprint exists in the pre-defined table stored within the Bootloader. Otherwise, remove the signature from the RAM table. 4. The key referenced by the fingerprint is capable to sign the given payload. Otherwise, remove the signature from the RAM table. The use of Maintainer keys is not allowed to sign a firmware file containing the "boot" section. 5. The key referenced by fingerprint was not encountered in the RAM table before. Otherwise, remove the duplicating signature from the RAM table. 6. The number of remaining signatures is not less than a predefined minimum signature threshold (a separate threshold for the Firmware and for the Bootloader).
 8. Verify the integrity of all payload sections using the CRC algorithm.
 9. Perform partial erase of internal flash memory as needed to store the new firmware, excluding sectors occupied by the currently executed copy of the Bootloader, the Start-up code, internal file systems and the key storage. A version check record is created to protect from the downgrade of the Main Firmware storing the latest version ever programmed in the device.
 10. Copy payload sections from an upgrade file file to internal flash memory.
-11. Perform verification of signature(s) using a prepared signature table in RAM. Verified data includes:
-    7. Section headers in RAM (not from SD card)
-    8. Payload data as read from non-removable Flash devices (not from SD card)
+11. Perform verification of signature(s) using a prepared signature table in RAM. Verified data includes: 7. Section headers in RAM (not from SD card) 8. Payload data as read from non-removable Flash devices (not from SD card)
 12. In case the signature verification is successful, the Bootloader creates an integrity check record in Internal Flash memory containing a CRC code of firmware sections along with version. In case the Bootloader is upgraded as well, an integrity check record is created at the end of its sector.
 13. Unmount the SD card and reboot.
 
@@ -98,10 +92,10 @@ In case any of the steps 1-5 fails, the Bootloader unmounts the SD card and proc
 
 Semantic versioning is used in the following format MAJOR.MINOR.PATCH[-rcREVISION]. All four components of the version are coded using decimal orders of a 32-bit number, as follows:
 
-* MAJOR: (0 ... 41) x 1e8
-* MINOR: (0 ... 999) x 1e5
-* PATCH: (0 ... 999) x 1e2
-* REVISION: 0 ... 98 - release candidate, 99 - stable version
+- MAJOR: (0 ... 41) x 1e8
+- MINOR: (0 ... 999) x 1e5
+- PATCH: (0 ... 999) x 1e2
+- REVISION: 0 ... 98 - release candidate, 99 - stable version
 
 For example, version "1.22.134-rc5" is coded as 102213405 decimal (0x617a71d). REVISION component is used **only for release candidates**. For the stable versions, revision is always equal to 99 to position them in history "later" than any release candidate and blocking downgrading to non-stable versions. Another example: a stable version "12.0.15" is coded as 1200001599. Maximally supported version is "41.999.999", which equals to 4199999999 (0xfa56e9ff). Versions above this number are considered invalid. Version constant 0x00000000 is reserved for "undefined" value.
 
@@ -131,7 +125,7 @@ typedef struct {
 
 Parameter `name` contains a zero-terminated string with a section name, one of "main", "boot", "sign" or probably other variants in the future versions.
 
-Array `attr_list[]` contains a list of required and optional attributes, specific to each type of section.  Each attribute record consists of **key** byte, **size** byte, and optionally **value** field (0...214 bytes) whose length is specified in the size byte. Keys are unique within the attribute list and have the same meaning for each section.
+Array `attr_list[]` contains a list of required and optional attributes, specific to each type of section. Each attribute record consists of **key** byte, **size** byte, and optionally **value** field (0...214 bytes) whose length is specified in the size byte. Keys are unique within the attribute list and have the same meaning for each section.
 
 Numerical arguments are coded as variable length integers in little-endian format. For example, a 32-bit number 0x00012345 is coded as three bytes 0x45, 0x23, 0x01. Unused bytes of attr_list[] are filled with 0x00.
 
@@ -165,17 +159,17 @@ The contents of the signature section is a list of fingerprint-signature pairs. 
 Calculation of digital signature is a multi-step process using `secp256k1-sha256` algorithm:
 
 1. A separate SHA-256 hash is calculated over each payload section including its header: \
-  **_h<sub>i</sub>_ = SHA-256( _header<sub>i</sub>_ | _payload<sub>i</sub>_ )**
+   **_h<sub>i</sub>_ = SHA-256( _header<sub>i</sub>_ | _payload<sub>i</sub>_ )**
 2. Resulting hash values are concatenated together, hashed again and mapped to 5-bit symbols to produce the data part for a Bech32 message: \
-  **_data_ = MAP_5BIT( SHA-256( _h<sub>0</sub>_ | ... | _h<sub>i</sub>_ ) )**
+   **_data_ = MAP*5BIT( SHA-256( \_h<sub>0</sub>* | ... | _h<sub>i</sub>_ ) )**
 3. A human readable part for a Bech32 message is produced by concatenating brief section name and a textual representation of version of each payload section. Information realted to each payload section is terminated by dash '-' symbol for a better visual separation. \
-  **_hrp_ = BRIEF( _name<sub>0</sub>_ ) | _version<sub>0</sub>_ | '-' | ... | BRIEF( _name<sub>i</sub>_ ) | _version<sub>i</sub>_ | '-'**
+   **_hrp_ = BRIEF( _name<sub>0</sub>_ ) | _version<sub>0</sub>_ | '-' | ... | BRIEF( _name<sub>i</sub>_ ) | _version<sub>i</sub>_ | '-'**
 4. The message to sign is produced from **_data_** and **_hrp_** components according to Bech32 standard: \
-  **_M_ = Bech32( _hrp_, _data_ )**
+   **_M_ = Bech32( _hrp_, _data_ )**
 5. The message is signed according to widely used Bitcoin message signing protocol with a private key d: \
-  **_m_ = 0x18 | "Bitcoin Signed Message:\n" | COMPACT_ENCODE( LEN( _M_ ) ) | _M_** \
-  **_mh_ = SHA-256( SHA-256( _m_ ) )** \
-  **_signature<sub>i</sub>_ = SECP256K1_SIGN( _d_, _mh_ )**
+   **_m_ = 0x18 | "Bitcoin Signed Message:\n" | COMPACT*ENCODE( LEN( \_M* ) ) | _M_** \
+   **_mh_ = SHA-256( SHA-256( _m_ ) )** \
+   **_signature<sub>i</sub>_ = SECP256K1*SIGN( \_d*, _mh_ )**
 
 A data part for a Bech32 message, **_data_**, is an array of 5-bit values according to Bech32 standard. Output of **SHA-256** hash function is mapped MSB-first to 52 5-bit values. MSB of the first byte of hash function's output is placed in the MSB of the first 5-bit value. LSB of the last byte is placed in the MSB of the last 5-bit value. Remaining 4 least significant bist of the last 5-bit value are initialized with zeroes.
 
@@ -304,14 +298,14 @@ A version check record (VCR) contains the latest version that was ever programme
 
 The exact size of the section's parts is not important and determined by the platform, assuming that:
 
-* Each part can be erased independently
-* Each part is large enough to contain a VCR
+- Each part can be erased independently
+- Each part is large enough to contain a VCR
 
 When a VCR is created, it is assigned with the latest known version of the Main Firmware that is determined as the greatest of the following three numbers:
 
-* Payload version from a version check record, if it exists
-* Version from a VCR at the beginning of the section, if it exists
-* Version from a VCR at the end of the section, if it exists
+- Payload version from a version check record, if it exists
+- Version from a VCR at the beginning of the section, if it exists
+- Version from a VCR at the end of the section, if it exists
 
 Format of the version check record:
 
@@ -338,7 +332,6 @@ A version check record occupying exactly 32 bytes is stored starting from offset
 ## Internal Flash memory map
 
 Memory map of the internal Flash memory is provided for STM32F469NI microcontroller. Occupied sectors are chosen to be compatible with MicroPython firmware so the specified Bootloader can replace Mboot. The only change that needs to be done is to reduce the size of FLASH_TEXT section in the platform-specific linker script to free the last two sectors for copies of Bootloader.
-
 
 <table>
   <tr>

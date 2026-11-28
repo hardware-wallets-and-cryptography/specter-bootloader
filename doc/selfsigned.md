@@ -51,6 +51,7 @@ If you want to include main firmware there as well, just add `-f ../path/to/comp
 The resulting `initial_firmware.bin` can be copy-pasted to the `DIS_F469I` volume that appears when you connect the board with miniUSB.
 
 Alternatively, if you have [`stlink-tools`](https://github.com/stlink-org/stlink) installed, you can flash the firmware with verification using:
+
 ```sh
 st-flash write initial_firmware.bin 0x8000000
 ```
@@ -79,7 +80,7 @@ Now we got the `specter_upgrade.bin` that we need to sign. If your keys are stor
 Use this command to get the message to sign:
 
 ```sh
-python3 upgrade-generator.py message specter_upgrade.bin 
+python3 upgrade-generator.py message specter_upgrade.bin
 ```
 
 It will return something like `1.4.0-1sujn22lsgatcpyesj9v8lf4zts6myds0cwdl9ukk7pqnasr06laq2gm2yt` - here you see that it's a firmware version 1.4.0 and bech32-encoded hash of the firmware. You can sign this message now and when you get a signature in base64 format you need to add it to the upgrade:
